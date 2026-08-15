@@ -16,6 +16,10 @@ if (!token || !host) {
     ui_host: host,
     defaults: "2026-01-30",
     capture_exceptions: true,
+    // Vertex uses PostHog for product analytics only. Surveys are out of scope,
+    // and loading the extension only invites blockers to fail the request and
+    // log "Could not load surveys script".
+    disable_surveys: true,
     debug: process.env.NODE_ENV === "development",
   });
 }
