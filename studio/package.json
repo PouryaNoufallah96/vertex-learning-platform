@@ -11,7 +11,8 @@
     "typegen": "sanity schemas extract && sanity typegen generate",
     "seed:videos": "node scripts/seed/resolve-videos.mjs",
     "seed:build": "node scripts/seed/build-ndjson.mjs",
-    "seed:import": "sanity dataset import scripts/seed/seed.ndjson --dataset production --replace"
+    "seed:import": "sanity dataset import scripts/seed/seed.ndjson --dataset production --replace",
+    "context:import": "sanity dataset import scripts/context/vertex-search.ndjson --dataset production --replace"
   },
   "dependencies": {
     "@sanity/icons": "^5.2.1",

@@ -14,6 +14,7 @@
  *    up as a red badge in the Studio three days later.
  */
 
+import {createHash} from 'node:crypto'
 import {readFileSync, writeFileSync, existsSync} from 'node:fs'
 import {dirname, join} from 'node:path'
 import {fileURLToPath} from 'node:url'
@@ -38,14 +39,28 @@ const check = (condition, message) => {
 
 /* ---------------------------------------------------------------- helpers */
 
-/** Stable `_key`s: same input, same output, so a re-import produces no diff noise. */
-const keyOf = (...parts) =>
-  parts
-    .join('-')
+const KEY_MAX_LENGTH = 60
+
+const slugify = (value) =>
+  String(value)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
-    .slice(0, 60)
+
+/**
+ * Stable `_key`s: same input, same output, so a re-import produces no diff noise.
+ *
+ * Over-long keys keep a digest of the full input instead of a bare truncation — the distinguishing
+ * part of these keys is the tail (`-point-0`, `-h2`), so plain truncation collided every block
+ * inside a lesson with a long slug.
+ */
+const keyOf = (...parts) => {
+  const full = parts.map(slugify).filter(Boolean).join('-')
+  if (full.length <= KEY_MAX_LENGTH) return full
+
+  const digest = createHash('sha1').update(full).digest('hex').slice(0, 8)
+  return `${full.slice(0, KEY_MAX_LENGTH - digest.length - 1).replace(/-$/, '')}-${digest}`
+}
 
 /** A Portable Text paragraph or heading. */
 const block = (text, style = 'normal', keyBase) => ({

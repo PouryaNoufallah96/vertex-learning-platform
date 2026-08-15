@@ -98,10 +98,13 @@ export const LESSON_BY_SLUG_QUERY = defineQuery(`
       _id,
       title,
       "slug": slug.current,
+      level,
+      coverImage,
       "instructor": instructor->{name, "slug": slug.current, photo},
       modules[]{
         _key,
         title,
+        "durationSeconds": math::sum(lessons[]->duration),
         lessons[]->{
           _id,
           title,
@@ -109,6 +112,35 @@ export const LESSON_BY_SLUG_QUERY = defineQuery(`
           duration,
           freePreview
         }
+      }
+    }
+  }
+`);
+
+/**
+ * Grounding read for search. The LLM only names lesson `_id`s (AGENTS.md §7, §11) — every field a
+ * result card shows is read back from the dataset here, so nothing the model wrote reaches the UI.
+ *
+ * The parent course comes from a reverse reference, and its modules come back whole so the caller
+ * can derive the module title and the positional "5.1" label from array order.
+ */
+export const LESSONS_BY_IDS_QUERY = defineQuery(`
+  *[_type == "lesson" && _id in $ids]{
+    _id,
+    _createdAt,
+    title,
+    "slug": slug.current,
+    duration,
+    freePreview,
+    keyPoints,
+    "thumbnailRef": thumbnail.asset._ref,
+    "course": *[_type == "course" && references(^._id)][0]{
+      title,
+      "slug": slug.current,
+      modules[]{
+        _key,
+        title,
+        "lessonIds": lessons[]._ref
       }
     }
   }

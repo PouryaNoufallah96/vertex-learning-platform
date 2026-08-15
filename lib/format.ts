@@ -13,6 +13,17 @@ export function formatDuration(seconds: number | null | undefined) {
   return `${hours}h ${minutes}m`;
 }
 
+/** `765` → `12:45`, `5280` → `1:28:00`. Used for matched video moments. */
+export function formatTimestamp(seconds: number) {
+  const safe = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(safe / 3600);
+  const minutes = Math.floor((safe % 3600) / 60);
+  const secs = safe % 60;
+  const pad = (value: number) => `${value}`.padStart(2, "0");
+
+  return hours ? `${hours}:${pad(minutes)}:${pad(secs)}` : `${minutes}:${pad(secs)}`;
+}
+
 /** `2100` → `2.1k`, `950` → `950`. */
 export function formatCount(value: number | null | undefined) {
   if (value === null || value === undefined) return null;
