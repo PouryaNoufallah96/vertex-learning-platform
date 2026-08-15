@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import { PostHogUserIdentifier } from "@/components/posthog/posthog-user-identifier";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider>
+          <PostHogUserIdentifier />
           {children}
         </ClerkProvider>
       </body>
