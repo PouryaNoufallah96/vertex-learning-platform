@@ -27,6 +27,10 @@
   --color-background: #fafafc;
   --color-surface: #ffffff;
 
+  /* Warm canvas used by the marketing pages (home) and its hairlines */
+  --color-canvas: #fbf8f5;
+  --color-canvas-line: #f0e7e0;
+
   /* Typography */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-playfair), ui-serif, Georgia, serif;

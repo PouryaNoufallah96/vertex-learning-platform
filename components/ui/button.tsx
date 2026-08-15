@@ -2,16 +2,18 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary" | "tertiary" | "text";
-export type ButtonSize = "lg" | "md";
+export type ButtonSize = "xl" | "lg" | "md";
 
 const base =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-md font-sans font-medium whitespace-nowrap " +
+  "inline-flex items-center justify-center gap-2 rounded-md font-sans font-medium whitespace-nowrap " +
   "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 " +
   "focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed";
 
 const sizes: Record<ButtonSize, string> = {
-  lg: "px-4 text-[16px]",
-  md: "px-3 text-[14px]",
+  /** Hero call to action. */
+  xl: "h-16 gap-4 px-7 text-[17px]",
+  lg: "h-11 px-4 text-[16px]",
+  md: "h-11 px-3 text-[14px]",
 };
 
 const variants: Record<ButtonVariant, string> = {
@@ -42,6 +44,22 @@ const disabledVariants: Record<ButtonVariant, string> = {
   tertiary: "border-neutral-200 bg-neutral-50 text-neutral-300",
   text: "text-primary-300",
 };
+
+/**
+ * Button appearance as a class string, for elements that cannot be a `Button`/`ButtonLink` —
+ * chiefly `next/link`, which must render its own anchor to keep prefetching.
+ */
+export function buttonClasses({
+  variant = "primary",
+  size = "lg",
+  className,
+}: {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  className?: string;
+} = {}) {
+  return cn(base, sizes[size], variants[variant], hoverVariants[variant], className);
+}
 
 interface ButtonBaseProps {
   variant?: ButtonVariant;
