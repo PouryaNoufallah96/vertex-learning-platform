@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { ChevronDown, PlayCircle } from "lucide-react";
 import Link from "next/link";
+import posthog from "posthog-js";
 import type { COURSE_BY_SLUG_QUERY_RESULT } from "@/sanity.types";
 import { Badge } from "@/components/ui/badge";
 import { formatDuration, lessonLabel, pluralize } from "@/lib/format";
@@ -34,10 +35,16 @@ export function CourseContent({ modules, durationSeconds }: CourseContentProps) 
   const visible = isTruncated && !showAll ? modules.slice(0, COLLAPSED_MODULE_COUNT) : modules;
   const duration = formatDuration(durationSeconds);
 
-  const toggle = (key: string) =>
+  const toggle = (key: string, moduleTitle: string | null, moduleIndex: number) => {
+    const isCurrentlyOpen = openKeys.includes(key);
     setOpenKeys((keys) =>
-      keys.includes(key) ? keys.filter((open) => open !== key) : [...keys, key],
+      isCurrentlyOpen ? keys.filter((open) => open !== key) : [...keys, key],
     );
+    posthog.capture(isCurrentlyOpen ? "module_collapsed" : "module_expanded", {
+      module_index: moduleIndex + 1,
+      module_title: moduleTitle,
+    });
+  };
 
   return (
     <section aria-labelledby="course-content">
@@ -68,7 +75,7 @@ export function CourseContent({ modules, durationSeconds }: CourseContentProps) 
             <li key={key} className="border-b border-canvas-line last:border-b-0">
               <button
                 type="button"
-                onClick={() => toggle(key)}
+                onClick={() => toggle(key, module.title ?? null, moduleIndex)}
                 aria-expanded={isOpen}
                 aria-controls={contentId}
                 className="flex w-full items-center gap-5 px-5 py-3.5 text-left transition-colors hover:bg-canvas-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset sm:px-7"
@@ -117,6 +124,12 @@ export function CourseContent({ modules, durationSeconds }: CourseContentProps) 
                         <Link
                           href={lessonHref(lesson.slug)}
                           className="flex items-center gap-4 rounded-sm py-2 pr-14 transition-colors hover:text-primary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:pr-16"
+                          onClick={() =>
+                            posthog.capture("lesson_clicked", {
+                              lesson_label: lessonLabel(moduleIndex, lessonIndex),
+                              module_index: moduleIndex + 1,
+                            })
+                          }
                         >
                           <LessonRow
                             label={lessonLabel(moduleIndex, lessonIndex)}
@@ -148,7 +161,14 @@ export function CourseContent({ modules, durationSeconds }: CourseContentProps) 
         <div className="-mt-5.5 flex justify-center">
           <button
             type="button"
-            onClick={() => setShowAll((value) => !value)}
+            onClick={() => {
+              const next = !showAll;
+              setShowAll(next);
+              posthog.capture("course_content_show_all_toggled", {
+                expanded: next,
+                total_modules: modules.length,
+              });
+            }}
             aria-expanded={showAll}
             className="inline-flex items-center gap-3 rounded-md border border-canvas-line bg-canvas px-6 py-2.5 text-[15px] leading-6 text-neutral-900 transition-colors hover:text-primary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
           >

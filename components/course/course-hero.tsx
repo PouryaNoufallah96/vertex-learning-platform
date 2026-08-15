@@ -1,9 +1,8 @@
-import { ArrowRight, BarChart3, Bookmark, Clock, FileText, type LucideIcon, Users } from "lucide-react";
+import { BarChart3, Clock, FileText, type LucideIcon, Users } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import type { COURSE_BY_SLUG_QUERY_RESULT } from "@/sanity.types";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonClasses } from "@/components/ui/button";
+import { CourseHeroActions } from "@/components/course/course-hero-actions";
 import { urlFor } from "@/sanity/lib/image";
 import { formatCount, formatDuration, formatLevel, pluralize } from "@/lib/format";
 
@@ -68,21 +67,10 @@ export function CourseHero({ course, continueHref }: CourseHeroProps) {
           </ul>
         )}
 
-        <div className="mt-8 flex flex-wrap items-center gap-4">
-          {continueHref && (
-            <Link
-              href={continueHref}
-              className={buttonClasses({ className: "h-14 px-6 text-[16px]" })}
-            >
-              Continue Learning
-              <ArrowRight className="size-5" strokeWidth={2} aria-hidden />
-            </Link>
-          )}
-          <Button type="button" variant="tertiary" className="h-14 px-6 text-[16px]">
-            <Bookmark className="size-5" strokeWidth={2} aria-hidden />
-            Bookmark
-          </Button>
-        </div>
+        <CourseHeroActions
+          continueHref={continueHref}
+          courseSlug={course.slug ?? ""}
+        />
       </div>
     </div>
   );
