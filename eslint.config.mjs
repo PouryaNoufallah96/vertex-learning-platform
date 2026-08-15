@@ -16,6 +16,10 @@ const eslintConfig = defineConfig([
     "agent/**",
     ".agents/**",
     ".claude/**",
+    // Standalone Sanity Studio workspace — has its own toolchain.
+    "studio/**",
+    // TypeGen output.
+    "sanity.types.ts",
   ]),
 ]);
 
