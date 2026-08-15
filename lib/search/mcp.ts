@@ -16,8 +16,26 @@ function assertEnv(name: string) {
   return value;
 }
 
+/**
+ * HTTPS only: every call carries the read token in an Authorization header, so a plaintext endpoint
+ * would leak it. Validated here rather than at each call site — both the client and the
+ * initial-context fetch resolve the URL through this.
+ */
 export function searchMcpUrl() {
-  return assertEnv("SANITY_CONTEXT_MCP_URL");
+  const value = assertEnv("SANITY_CONTEXT_MCP_URL");
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error("SANITY_CONTEXT_MCP_URL is not a valid URL");
+  }
+
+  if (url.protocol !== "https:") {
+    throw new Error("SANITY_CONTEXT_MCP_URL must use https");
+  }
+
+  return url.toString();
 }
 
 function authHeaders() {
