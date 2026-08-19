@@ -114,19 +114,28 @@ npm install
 Create a new file named `.env` in the root of your project and add the following content:
 
 ```env
+NEXT_PUBLIC_SANITY_DATASET=
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+
+# Clerk — add your keys from dashboard.clerk.com > API keys.
+# CLERK_SECRET_KEY is server only: never prefix it with NEXT_PUBLIC_.
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 
-NEXT_PUBLIC_SANITY_PROJECT_ID=
-NEXT_PUBLIC_SANITY_DATASET=
+# Server-only. Paste a Viewer token from sanity.io/manage > API > Tokens.
 SANITY_API_READ_TOKEN=
 
-NEXT_PUBLIC_POSTHOG_KEY=
-NEXT_PUBLIC_POSTHOG_HOST=
+# Sanity Context MCP — the search agent's connection (slug applies the
+# sanity.agentContext document). Server only.
+SANITY_CONTEXT_MCP_URL=
 
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+# OpenAI — powers the search agent. Server only. Paste your key here.
+OPENAI_API_KEY=
 ```
 
 Replace the placeholder values with your real credentials. You can get these by signing up at: [**Clerk**](https://jsm.dev/vertex-clerk), [**Sanity**](https://jsm.dev/vertex-sanity), [**PostHog**](https://jsm.dev/vertex-posthog).
